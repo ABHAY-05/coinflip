@@ -1,16 +1,29 @@
+import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
+import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 import react from "@vitejs/plugin-react-swc";
-import { Buffer } from "buffer";
+import rollupNodePolyFill from "rollup-plugin-polyfill-node";
 import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      buffer: "buffer",
+  base: "",
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: "globalThis",
+      },
+      plugins: [
+        NodeGlobalsPolyfillPlugin({
+          buffer: false,
+          process: true,
+        }),
+        NodeModulesPolyfillPlugin(),
+      ],
     },
   },
-  define: {
-    global: "globalThis",
-    Buffer: Buffer,
+  build: {
+    rollupOptions: {
+      plugins: [rollupNodePolyFill()],
+    },
   },
 });
